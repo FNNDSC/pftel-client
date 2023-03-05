@@ -38,5 +38,5 @@ git push origin --tags
 rstcheck README.rst
 python3 -m build
 twine check dist/*
-twine upload dist/$(basename $(pwd)|tr '-', '_')-${VER}.tar.gz
+twine upload dist/$(basename $(pwd)|tr '-' '_')-${VER}.tar.gz
 
