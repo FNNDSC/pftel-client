@@ -40,7 +40,7 @@ reply: Response[log_response] = plog.sync.detailed(client = client, json_body = 
 
 Or do the same thing with an async version:
 
-```python
+```shell
 reply:log_response = await plog.asyncio(client = client, json_body = d_post)
 # or if you need more info (e.g. status_code)
 reply: Response[log_response] = await plog.asyncio.detailed(client = client, json_body = d_post)
@@ -50,7 +50,7 @@ By default, when you're calling an HTTPS API it will attempt to verify that SSL 
 
 ```python
 client = AuthenticatedClient(
-    base_url="https://internal_api.example.com", 
+    base_url="https://internal_api.example.com",
     token="SuperSecretToken",
     verify_ssl="/path/to/certificate_bundle.pem",
 )
@@ -60,8 +60,8 @@ You can also disable certificate validation altogether, but beware that **this i
 
 ```python
 client = AuthenticatedClient(
-    base_url="https://internal_api.example.com", 
-    token="SuperSecretToken", 
+    base_url="https://internal_api.example.com",
+    token="SuperSecretToken",
     verify_ssl=False
 )
 ```
