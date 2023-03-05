@@ -1,5 +1,5 @@
 # pftel-client
-A client library for accessing pftel
+A client library for accessing a `pftel` telemetry server, typically in the context of ChRIS workflow execution. Most use cases are POSTing log information to the remote server.
 
 ## Usage
 First, create a client:
@@ -7,38 +7,43 @@ First, create a client:
 ```python
 from pftel_client import Client
 
-client = Client(base_url="https://api.example.com")
+client = Client(base_url="http//your.telemetry.server:22223")
 ```
 
-If the endpoints you're going to hit require authentication, use `AuthenticatedClient` instead:
+Import the models:
 
 ```python
-from pftel_client import AuthenticatedClient
-
-client = AuthenticatedClient(base_url="https://api.example.com", token="SuperSecretToken")
-```
-
-Now call your endpoint and use your models:
-
-```python
-from pftel_client.models import MyDataModel
-from pftel_client.api.my_tag import get_my_data_model
+from pftel_client.models import log_structured, log_response
+from pftel_client.api.logger_services import log_write_api_v1_log_post as plog
 from pftel_client.types import Response
+```
 
-my_data: MyDataModel = get_my_data_model.sync(client=client)
+Create an object with the data to log:
+
+```python
+d_post:log_structured   = log_structured.LogStructured()
+d_post.log_object       = 'ChRIS_LegMeasurements'
+d_post.log_collection   = 'run-20230505.1630'
+d_post.log_event        = 'inference'
+d_post.app_name         = 'pl-lld_inference'
+d_post.exec_time        = 9.4532
+d_post.payload          = ''
+```
+
+And POST this log to the server:
+
+```python
+reply:log_response = plog.sync(client = client, json_body = d_post)
 # or if you need more info (e.g. status_code)
-response: Response[MyDataModel] = get_my_data_model.sync_detailed(client=client)
+reply: Response[log_response] = plog.sync.detailed(client = client, json_body = d_post)
 ```
 
 Or do the same thing with an async version:
 
 ```python
-from pftel_client.models import MyDataModel
-from pftel_client.api.my_tag import get_my_data_model
-from pftel_client.types import Response
-
-my_data: MyDataModel = await get_my_data_model.asyncio(client=client)
-response: Response[MyDataModel] = await get_my_data_model.asyncio_detailed(client=client)
+reply:log_response = await plog.asyncio(client = client, json_body = d_post)
+# or if you need more info (e.g. status_code)
+reply: Response[log_response] = await plog.asyncio.detailed(client = client, json_body = d_post)
 ```
 
 By default, when you're calling an HTTPS API it will attempt to verify that SSL is working correctly. Using certificate verification is highly recommended most of the time, but sometimes you may need to authenticate to a server (especially an internal server) using a custom certificate bundle.
